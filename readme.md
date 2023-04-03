@@ -7,8 +7,8 @@ A tool for checking your powerpoint presentations for accessibility issues.
 
 * [Introduction](#introduction)
 * [Technologies](#technologies)
-* [Setting up]{#setting-up}
-* [Features]{#features}
+* [Setting up](#setting-up)
+* [Features](#features)
 
 # Introduction
 
