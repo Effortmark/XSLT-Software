@@ -15,7 +15,7 @@ A tool for checking your powerpoint presentations for accessibility issues.
 This app is intended to support creating accessible presentations with Microsoft Powerpoint.
 When a presentation is uploaded it returns an audit of the presentation that shows you what formatting is being used and whether your images have a description (also used as alt tag).
 
-This project is open source, you have permission to fork and rework in your own way. If you do, please share back with the community.
+This project is open source, you have permission to fork and rework in your own way. If you do, please share back with the community. It is hosted on Heroku which since 2022 is no longer free. We pay with our own money to keep this active, please use it as much as you need and tell us if anything doesn't work right.
 
 ## Technologies
 
