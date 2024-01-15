@@ -7,7 +7,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="a r p z xs">
 
     <xsl:output method="html" indent="yes" version="5.0"/>
-    <xsl:param name="debug">1</xsl:param>
+    <xsl:param name="debug">0</xsl:param>
 
     <!-- list of slides -->
     <xsl:variable name="slides" select="//file[contains(@name, 'slides/slide')]"/>
