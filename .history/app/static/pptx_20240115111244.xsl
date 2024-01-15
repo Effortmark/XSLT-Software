@@ -159,7 +159,7 @@
                     </xsl:choose>
                 </xsl:variable>
 
-                <!-- Python uses the XSLT 1.0 processor
+                <!-- Pyton uses the XSLT 1.0 processor
                      - because of that, it's not possible to use the xsl:for-each-group - syntax
                      - via grouping it's easier possible to create a deep structure from a flat one
                      - here we check each list entry (always on the same structure level)
@@ -290,25 +290,24 @@
 
     <!-- Images -->
     <xsl:template match="p:pic">
-        <xsl:variable name="slide.name" select="ancestor::file/@name"/>
-        <xsl:variable name="slide.num"
-            select="substring-before(substring-after($slide.name, '/slides/slide'), '.xml')"/>
-        <xsl:variable name="slide.rels.name" select="concat('_rels/slide', $slide.num, '.xml.rels')"/>
-        <xsl:variable name="slide.layout.name"
-            select="substring-after($slides.rels[contains(@name, $slide.rels.name)]/*/*/@Target, '../')"/>
-        <xsl:variable name="slide.layout.node"
-            select="$slides.layout[contains(@name, $slide.layout.name)]"/>
-
-        <xsl:variable name="slide.rels.node"
-            select="$slides.rels[contains(@name, $slide.rels.name)]"/>
-
-        <!-- id for image in rels file -->
-        <xsl:variable name="id" select="descendant::a:blip/@r:embed"/>
+        <!-- Extract the image information and ALT tag -->
+        <xsl:variable name="embedId" select="p:blipFill/a:blip/@r:embed"/>
+        <xsl:variable name="altText" select="//a:blip[@r:embed=$embedId]/a:extLst/a:ext[@uri='http://schemas.openxmlformats.org/drawingml/2006/main']/a14:useLocalDpi/@val"/>
+        <xsl:attribute name="src">
+            <xsl:value-of select="//a:blip[@r:embed=$embedId]/a:blip/@r:embed"/>
+        </xsl:attribute>
+        <xsl:attribute name="alt">
+            <xsl:value-of select="$altText"/>
+        </xsl:attribute>
 
         <!-- image filename and description -->
         <div class="image-object">
+            
+
             <p><strong>Image: </strong>
                 <xsl:text> </xsl:text>
+                <xsl:value-of select="//a:blip[@r:embed=$embedId]/a:blip/@r:embed"/><br>
+                <xsl:value-of select="$altText"/>
                 <xsl:value-of
                     select="$slide.rels.node//*[name() = 'Relationship'][@Id = $id]/@Target"/>
                 <br />

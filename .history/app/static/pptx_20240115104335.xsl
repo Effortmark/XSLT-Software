@@ -7,7 +7,7 @@
     xmlns:xs="http://www.w3.org/2001/XMLSchema" exclude-result-prefixes="a r p z xs">
 
     <xsl:output method="html" indent="yes" version="5.0"/>
-    <xsl:param name="debug">1</xsl:param>
+    <xsl:param name="debug">0</xsl:param>
 
     <!-- list of slides -->
     <xsl:variable name="slides" select="//file[contains(@name, 'slides/slide')]"/>
@@ -159,7 +159,7 @@
                     </xsl:choose>
                 </xsl:variable>
 
-                <!-- Python uses the XSLT 1.0 processor
+                <!-- Pyton uses the XSLT 1.0 processor
                      - because of that, it's not possible to use the xsl:for-each-group - syntax
                      - via grouping it's easier possible to create a deep structure from a flat one
                      - here we check each list entry (always on the same structure level)
