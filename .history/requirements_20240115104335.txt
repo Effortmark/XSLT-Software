@@ -5,7 +5,7 @@ itsdangerous==1.1.0
 Jinja2==2.11.3
 lxml==4.6.3
 MarkupSafe==1.1.1
-Pillow==8.1.1
+Pillow==10.2.0
 python-dotenv==0.13.0
 Werkzeug==1.0.1
 XlsxWriter==1.2.8
