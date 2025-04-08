@@ -2,8 +2,62 @@
 
 {% block content %}
 <article role="main">
-    <h1>{{filename}}</h1>
-
+    <h1>Accessibility Review for: {{filename}}</h1>
     {{ result | safe }}
 </article>
+
+<style>
+    .accessibility-summary {
+        margin: 20px 0;
+        padding: 20px;
+        border-radius: 5px;
+    }
+
+    .accessibility-summary h2 {
+        margin-top: 0;
+    }
+
+    .accessibility-summary ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    .accessibility-summary .alert {
+        margin: 10px 0;
+        padding: 10px;
+    }
+
+    .badge {
+        background-color: #dc3545;
+        color: white;
+        padding: 3px 7px;
+        border-radius: 10px;
+        margin: 0 2px;
+    }
+
+    .alert-warning {
+        background-color: #fff3cd;
+        border-color: #ffecb5;
+        color: #664d03;
+    }
+
+    .alert-info {
+        background-color: #cff4fc;
+        border-color: #b6effb;
+        color: #055160;
+    }
+
+    .slide-item {
+        margin-top: 30px;
+        padding: 20px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+    }
+
+    .slide-item h1 {
+        margin-top: 0;
+        font-size: 1.5rem;
+        color: #495057;
+    }
+</style>
 {% endblock %}

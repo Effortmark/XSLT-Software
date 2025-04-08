@@ -1,22 +1,32 @@
-import os, config
-from http import cookies
-from flask import Flask, render_template, flash, request, redirect, url_for, Blueprint
+import os
+from flask import Flask, render_template
 from config import Config
 
-# Create and configure the app
-app = Flask(__name__)
+def create_app(test_config=None):
+    app = Flask(__name__, instance_relative_config=True)
+    
+    if test_config is None:
+        app.config.from_object(Config)
+    else:
+        app.config.update(test_config)
 
-    # # This config provides settings and variables that should be accessible throughout the app.
-    # app.config.from_pyfile('config.py', silent=True)
+    # ensure the instance folder exists
+    try:
+        os.makedirs(app.instance_path)
+    except OSError:
+        pass
 
-# Launch the app with the homepage
-@app.route('/')
-def index():
-    return render_template("index.html")
+    @app.route('/')
+    def index():
+        return render_template("index.html")
 
-# Blueprints for where the apps functions live.
-from . import forms
-app.register_blueprint(forms.bp)
+    # Register blueprints
+    from . import forms
+    app.register_blueprint(forms.bp)
 
-from . import pptxTranslator
-app.register_blueprint(pptxTranslator.bp)
+    from . import pptxTranslator
+    app.register_blueprint(pptxTranslator.bp)
+
+    return app
+
+app = create_app()

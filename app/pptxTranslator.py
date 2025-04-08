@@ -2,7 +2,9 @@ import os
 import time
 import re
 import urllib.request
-from flask import render_template, flash, request, redirect, url_for, Blueprint
+from pathlib import Path
+from functools import lru_cache
+from flask import render_template, flash, request, redirect, url_for, Blueprint, current_app
 from werkzeug.utils import secure_filename
 from zipfile import ZipFile
 from lxml import etree
@@ -10,84 +12,64 @@ from lxml import etree
 bp = Blueprint('translatorBlueprint', __name__, url_prefix="")
 
 UPLOAD_FOLDER = "/tmp/"
+ALLOWED_EXTENSIONS = {'pptx'}
 
-def make_transform(name, parser):
-    # https://lxml.de/xpathxslt.html#xslt
-    with open(name) as f:
-        # For base_url: https://lxml.de/parsing.html#parsers
-        xslt_root = etree.parse(f, parser, base_url='')
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-        transform = etree.XSLT(xslt_root)
-        return transform
+@lru_cache(maxsize=32)
+def make_transform(name):
+    """Create and cache XSLT transform."""
+    parser = etree.XMLParser(resolve_entities=False)
+    try:
+        with open(name) as f:
+            xslt_root = etree.parse(f, parser, base_url='')
+            return etree.XSLT(xslt_root)
+    except (IOError, etree.XMLSyntaxError) as e:
+        current_app.logger.error(f"Error creating transform: {e}")
+        raise
 
-# results page showing the output from the uploaded file
-@bp.route('/results/<filename>', methods=['GET', 'POST'])
+def process_xml_file(pptx, name):
+    """Process individual XML file from PPTX."""
+    # Extract number from name, default to 1 if no number found
+    numbers = re.findall(r'\d+', name)
+    num = numbers[0] if numbers else '1'
+    
+    with pptx.open(name) as f:
+        data = f.read().decode("utf-8-sig")
+        # Remove XML declaration
+        data = re.sub('<\?xml version=\"1.0\"[^>]+>', '', data)
+        return f'<file name="{name}" num="{num}">{data}</file>'
+
+@bp.route('/results/<filename>', methods=['GET'])
 def results(filename):
-    filename = filename
-    fileSubmitted = UPLOAD_FOLDER + filename
+    try:
+        file_path = Path(UPLOAD_FOLDER) / secure_filename(filename)
+        if not file_path.exists():
+            flash('File not found', 'error')
+            return redirect(url_for('index'))
 
-    """
-    ZipFile is a python tool that allows you to work with zip files.
-    We are using it to tell python that the .pptx file uploaded is actually a zipfile.
-    the 'r' tells ZipFile that this is for reading only.
-    """
-    prs = ZipFile(fileSubmitted, 'r')
+        with ZipFile(file_path, 'r') as pptx:
+            # Combine XML files
+            xml_parts = ['<?xml version="1.0"?><files>']
+            
+            for name in pptx.namelist():
+                if any(x in name for x in ("ppt/slideLayouts", "ppt/slides", "ppt/slideMasters")):
+                    xml_parts.append(process_xml_file(pptx, name))
+            
+            xml_parts.append('</files>')
+            xml_combined = '\n'.join(xml_parts)
 
-    # xml_combined is used to concat the content of all needed xml files
-    xml_combined = "<?xml version='1.0'?>\n<files>\n"
+            # Transform combined XML
+            transform = make_transform(os.path.join("app/static/pptx.xsl"))
+            xml_new = etree.fromstring(xml_combined.encode('utf-8'))
+            result = transform(xml_new)
 
-    # not needed anymore
+        # Clean up
+        file_path.unlink()
+        return render_template("results.html", result=result, filename=filename)
 
-    # save the whole zip to the processing directory
-    # with ZipFile(fileSubmitted, 'r') as zipObj:
-    #     zipObj.extractall(processDest)
-
-    with prs as pptx:
-        # The parser we are going to use to read this .pptx.
-        parser = etree.XMLParser()
-
-        # Have the transform use our custom schema to resolve it.
-        xsl_name = os.path.join("app/static/pptx.xsl")
-
-        # transform command stating the schema to run into the parser.
-        transform = make_transform(xsl_name, parser)
-
-
-        """
-        The main for loop runs through the transformed xml and appends to the slide_contents array what it finds on each loop.
-        """
-        for name in pptx.namelist():
-            # get all xml files we need
-            if "ppt/slideLayouts" in name or "ppt/slides" in name or "ppt/slideMasters" in name:
-
-                # for sorting the slides in the correct order, the number of each slide is saved in a num attribute
-                num = re.findall(r'\d+', name)
-
-                # for each xml file we create a new file element with the relative path
-                xml_combined = xml_combined + "\n<file name=\"" + name + "\" num=\"" + str(num[0]) + "\">"
-                with pptx.open(name) as f:
-                    data = f.read()
-                    data_no_bom = data.decode("utf-8-sig") # remove BOM of each file
-
-                    xml_combined = xml_combined + str(data_no_bom)
-
-                    # removing of each xml declaration in xml files (we need only one)
-                    xml_combined = re.sub('<\?xml version=\"1.0\"[^>]+>', '', xml_combined)
-                    xml_combined = xml_combined + "\n</file>"
-
-    xml_combined = xml_combined + "</files>"
-
-    # reading from string instead of file to parse
-    xml_new = etree.fromstring(xml_combined)
-
-    result = transform(xml_new)
-    newXMLLoc = UPLOAD_FOLDER + str(filename) + ".xml"
-
-    # Creating new files and writing to them the contents in the fors.
-    newXML = open(newXMLLoc, "w")
-    newXML.write(str(result))
-
-    # remove the uploaded file from the tmp dir
-    os.remove(fileSubmitted)
-    os.remove(newXMLLoc)
-    return render_template("results.html",  result = result, filename = filename)
+    except Exception as e:
+        current_app.logger.error(f"Error processing file {filename}: {str(e)}")
+        flash(f"An error occurred while processing the file: {str(e)}", 'error')
+        return redirect(url_for('index'))
