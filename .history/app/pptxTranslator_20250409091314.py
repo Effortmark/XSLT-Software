@@ -14,6 +14,7 @@ from .config import Config
 
 bp = Blueprint('translatorBlueprint', __name__, url_prefix="")
 
+UPLOAD_FOLDER = "/tmp/"
 ALLOWED_EXTENSIONS = {'pptx'}
 
 def allowed_file(filename):
@@ -155,12 +156,20 @@ def results(filename):
         flash(f"An error occurred while processing the file", 'error')
         return redirect(url_for('index'))
 
-def start_cleanup(app):
+# Schedule cleanup task
+def schedule_cleanup():
     """Schedule periodic cleanup of old files."""
-    with app.app_context():
-        while True:
-            try:
-                Config.cleanup_old_files()
-            except Exception as e:
-                app.logger.error(f"Error in cleanup task: {str(e)}")
-            time.sleep(Config.CLEANUP_INTERVAL)
+    while True:
+        try:
+            Config.cleanup_old_files()
+        except Exception as e:
+            current_app.logger.error(f"Error in cleanup task: {str(e)}")
+        time.sleep(Config.CLEANUP_INTERVAL)
+
+# Start cleanup thread when app starts
+@bp.before_app_first_request
+def start_cleanup():
+    import threading
+    cleanup_thread = threading.Thread(target=schedule_cleanup)
+    cleanup_thread.daemon = True
+    cleanup_thread.start()

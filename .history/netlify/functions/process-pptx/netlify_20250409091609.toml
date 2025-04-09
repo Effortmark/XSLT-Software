@@ -1,0 +1,8 @@
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = ["jszip", "xml2js", "mime-types"]
+
+[functions.process-pptx]
+  included_files = ["public/static/pptx.xsl"]
+  timeout = 30
+  memory = 1024 

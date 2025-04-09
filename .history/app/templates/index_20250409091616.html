@@ -1,0 +1,57 @@
+{% extends "layout/base.html" %}
+
+{% block content %}
+    <article role="main">
+        <div class="row">
+            <div class="col order-last">
+                <div class="form-container">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <div class="form-group">
+                            <label for="file">Upload your Powerpoint presentation</label>
+                            <input type="file" id="file" name="file" class="form-control-file" accept=".pptx">
+                            <small id="emailHelp" class="form-text text-muted">.pptx files only</small>
+                        </div>
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn-primary">
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col">
+              <h1>PPTX Checker</h1>
+                <p class="lead">We think that it’s really important to make PowerPoint presentations accessible. One essential is to have good alt-txt for all the images – but PowerPoint’s accessibility checker only tells you whether you have any alt-text, not whether it makes sense.</p>
+
+                <p>This Alt Text Checker reads a file in .pptx format and gives a slide-by-slide report on what it finds. You can check:</p>
+
+                <ul>
+                    <li>Whether images, diagrams and tables are clearly explained</li>
+                    <li>The order in which a screenreader will describe what’s on each slide</li>
+                    <li>The hierarchy of headings, captions and credits</li>
+                </ul>
+
+                <h3>The tool is free to use</h3>
+
+                <p>Upload your .pptx file using the ‘submit’ button. You’ll then get a report on each individual slide.</p>
+
+                <p>Everything you upload is deleted after the results page is loaded. We don't keep copies, or cache any files. If you want the results in future, you can save the report to your own device or upload your presentation again.</p>
+
+                <p>It only understands .pptx format. If you try anything else, it won’t work.</p>
+
+                <p><strong>There are guidelines for creating accessible presentations on the Effortmark website
+</strong></p>
+
+                <p>This ‘<a href="https://www.effortmark.co.uk/making-presentations-accessible/" rel="me">Making presentations accessible</a>’ article has advice on how to ensure your presentations are accessible to everyone – as well as links to other useful resources.</p>
+
+                <p>It also explains the impetus for developing this alt-text checker tool: when we wanted to bring the entire Effortmark PowerPoint backlog onto the website, but also needed to ensure it was accessible to all.</p>
+
+                <h4>This tool is an Effortmark project</h4>
+
+                <p>Andy Parker, with a lot of support from Frank Z did much of the technical heavy-lifting, along with Effortmark’s Malcolm Jarrett, and Jonathan Fine. This version of the tool grew from the original app, developed for Effortmark by <a href="https://twitter.com/joelanman">Joe Lanman</a>. We’d also like to thank Peter Flynn for his help in cracking the .pptx format.</p>
+
+                <h4>We’d love your feedback and suggestions for improving the tool</h4>
+                <p>You can learn more about Effortmark on the website <a href="https://www.effortmark.co.uk/making-presentations-accessible/" rel="me">https://www.effortmark.co.uk</a></p>
+                <p>The repository is public at <a href="https://github.com/Effortmark/XSLT-Software">https://github.com/Effortmark/XSLT-Software</a> so you can clone it and run it locally if you cannot upload your pptx files, and contribute to its development. You won’t be able to make any changes without us approving them.</p>
+            </div>
+        </div>
+<article>
+{% endblock %}

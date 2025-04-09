@@ -21,17 +21,21 @@ def create_app(test_config=None):
     except OSError:
         pass
 
+    @app.route('/')
+    def index():
+        return render_template("index.html")
+
     # Register blueprints
     from . import forms
     app.register_blueprint(forms.bp)
-
-    from . import pptxTranslator
-    app.register_blueprint(pptxTranslator.bp)
 
     # Initialize cleanup thread
     cleanup_thread = threading.Thread(target=start_cleanup, args=(app,))
     cleanup_thread.daemon = True
     cleanup_thread.start()
+
+    from . import pptxTranslator
+    app.register_blueprint(pptxTranslator.bp)
 
     return app
 

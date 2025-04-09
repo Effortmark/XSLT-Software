@@ -1,8 +1,6 @@
 import os
 from flask import Flask, render_template
-from .config import Config
-from .pptxTranslator import start_cleanup
-import threading
+from config import Config
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
@@ -12,14 +10,15 @@ def create_app(test_config=None):
     else:
         app.config.update(test_config)
 
-    # Initialize the Config class
-    Config.init_app(app)
-
     # ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
+
+    @app.route('/')
+    def index():
+        return render_template("index.html")
 
     # Register blueprints
     from . import forms
@@ -27,11 +26,6 @@ def create_app(test_config=None):
 
     from . import pptxTranslator
     app.register_blueprint(pptxTranslator.bp)
-
-    # Initialize cleanup thread
-    cleanup_thread = threading.Thread(target=start_cleanup, args=(app,))
-    cleanup_thread.daemon = True
-    cleanup_thread.start()
 
     return app
 

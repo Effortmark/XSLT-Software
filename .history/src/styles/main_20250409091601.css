@@ -1,0 +1,55 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom styles for accessibility features */
+.missing-alt {
+    @apply border-l-4 border-yellow-500 pl-4;
+}
+
+.complex-table {
+    @apply border-l-4 border-blue-500 pl-4;
+}
+
+.small-text {
+    @apply text-yellow-600;
+}
+
+/* Result page styles */
+.slide-item {
+    @apply mb-8 p-6 border border-gray-200 rounded-lg;
+}
+
+.table-container {
+    @apply my-4 overflow-x-auto;
+}
+
+.table-container table {
+    @apply min-w-full border-collapse border border-gray-300;
+}
+
+.table-container th {
+    @apply bg-gray-100 border border-gray-300 px-4 py-2 text-left;
+}
+
+.table-container td {
+    @apply border border-gray-300 px-4 py-2;
+}
+
+.image-object {
+    @apply my-4 p-4 bg-gray-50 rounded-lg;
+}
+
+/* Accessibility summary styles */
+.accessibility-summary {
+    @apply mb-8 p-6 bg-white rounded-lg shadow-md;
+}
+
+.accessibility-warning {
+    @apply text-yellow-600 mb-2;
+}
+
+.accessibility-info {
+    @apply text-blue-600 mb-2;
+}
+

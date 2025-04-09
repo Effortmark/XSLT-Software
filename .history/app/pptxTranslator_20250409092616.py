@@ -14,6 +14,7 @@ from .config import Config
 
 bp = Blueprint('translatorBlueprint', __name__, url_prefix="")
 
+UPLOAD_FOLDER = "/tmp/"
 ALLOWED_EXTENSIONS = {'pptx'}
 
 def allowed_file(filename):

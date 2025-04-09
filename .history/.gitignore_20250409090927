@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.env/
+dist/
+build/
+*.egg-info/
+
+# Heroku
+*.log
+tmp/
+.DS_Store
+.env
+.env.production
+.env.development
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+*__pycache__
+*.DS_Store
+.history/
